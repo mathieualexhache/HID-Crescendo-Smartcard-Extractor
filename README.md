@@ -11,7 +11,7 @@ The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed t
   Fully compliant with the **PC/SC framework**, an industry-standard API for smart card readers, enabling interaction with cards via APDU and Extended APDU protocols (for T=1 cards).
 
 - **CPLC Data Extraction**:  
-  Uses ISO 7816 commands to extract **Card Production Lifecycle Data (CPLC)**, including serial numbers, from blank smart cards (such as the **HID Crescendo 144K FIPS Contact Only** model) that have not yet been configured with a **PIV applet**. This allows identification of cards before they are provisioned through Credential Management Systems.
+  Uses ISO 7816 commands to extract **Card Production Lifecycle Data (CPLC)**, including serial numbers, from blank smart cards that have not yet been configured with a **PIV applet**. This allows identification of cards before they are provisioned through Credential Management Systems.
 
 - **PIV Data Extraction**:  
   Supports the extraction of **FIPS 201 'Printed Information'** from PIV cards by sending binary APDU commands.
@@ -27,8 +27,7 @@ The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed t
 - **Operating System**: Windows 10 or later (64-bit only).
 - **PowerShell**: PowerShell 7.x or later.
 - **Administrator privileges** are required to modify registry settings during installation (specifically, to enable smart card reader escape commands).
-  
-  In order to send or receive **Escape commands** to a smart card reader using Microsoft’s CCID driver, you need to modify the Windows registry by adding a DWORD value called `EscapeCommandEnable` and setting it to a non-zero value. This is required to ensure the smart card reader can handle Escape commands. The registry key for enabling Escape CCID commands is located at:  
+- In order to send or receive **Escape commands** to a smart card reader using Microsoft’s CCID driver, you need to modify the Windows registry by adding a DWORD value called `EscapeCommandEnable` and setting it to a non-zero value. This is required to ensure the smart card reader can handle Escape commands. The registry key for enabling Escape CCID commands is located at:  
   `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB\VID_076B&PID_502A\<serial_number>\Device Parameters\WUDFUsbccidDriver`.
 
 ## Installation Instructions
@@ -68,7 +67,7 @@ If you need to adjust settings, modify functionality, or add new features, follo
 
 ### Building and Running the Program:
 
-Once the program is compiled, the installation process will follow the default instructions provided earlier. Users can run the program either directly from the command line or via the generated installer, which will handle all dependencies and setup.
+Once the program is compiled, the installation process will follow the default instructions provided earlier.
 
 ## Logs
 
@@ -90,7 +89,7 @@ The log entries indicate the progress of the serial number upload process, inclu
   Ensure the **OMNIKEY® 3021** or compatible smart card reader is connected via USB.
 
 - **Launch the Program**:  
-  Open the program by double-clicking the icon.
+  Open the program by double-clicking the built icon.
 
 - **Scan Cards**:  
   Insert a smart card into the reader. The program will automatically extract its serial number and display a prompt to continue scanning more cards or stop.
