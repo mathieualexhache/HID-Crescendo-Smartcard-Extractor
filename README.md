@@ -14,10 +14,10 @@ The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed t
   Uses [ISO 7816](https://www.iso.org/obp/ui/#iso:std:79893:en) commands to extract **Card Production Lifecycle Data (CPLC)**, including serial numbers, from blank smart cards that have not yet been configured with a **PIV applet**. This allows identification of cards before they are provisioned through Credential Management Systems.
 
 - **PIV Data Extraction**:  
-  Supports the extraction of [**FIPS 201 'Printed Information**](https://csrc.nist.gov/pubs/sp/800/73/4/upd1/final) from PIV cards by sending binary APDU commands.
+  Supports the extraction of [**FIPS 201 'Printed Information'**](https://csrc.nist.gov/pubs/sp/800/73/pt1/5/final) from PIV cards by sending binary APDU commands.
 
 - **Installer Package**:  
-  Distributed as a self-contained Windows installer that includes all necessary dependencies, such as PowerShell 7.x and the [***PnP.PowerShell**](https://pnp.github.io/powershell/) module for SharePoint Online interaction.
+  Distributed as a self-contained Windows installer that includes all necessary dependencies, such as PowerShell 7.x and the [**PnP.PowerShell**](https://pnp.github.io/powershell/) module for SharePoint Online interaction.
 
 - **CSV Report Generation**:  
   Automatically generates a local CSV report containing the extracted serial numbers for inventory tracking.
