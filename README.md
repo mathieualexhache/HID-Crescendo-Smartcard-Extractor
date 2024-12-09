@@ -1,23 +1,23 @@
 # HID-Crescendo-Smartcard-Extractor
 
-The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed to facilitate batch swiping and serial number extraction from ISO/IEC 7816 contact smart cards. It works with the **HID Crescendo 144K FIPS Contact Only (SCE7.0 144KDI)** smart card model and the **OMNIKEY® 3021 Contact Smart Card Reader**, providing a seamless process for extracting serial numbers and automatically uploading them to a SharePoint Online Inventory Asset Management list. This tool is primarily used for tracking unassigned and assigned smart cards in a networked environment.
+The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed to facilitate batch swiping and serial number extraction from ISO/IEC 7816 contact smart cards. It works with the [**HID Crescendo 144K FIPS Contact Only (SCE7.0 144KDI)**](https://www.hidglobal.com/products/crescendo) smart card model and the **OMNIKEY® 3021 Contact Smart Card Reader**, providing a seamless process for extracting serial numbers and automatically uploading them to a SharePoint Online Inventory Asset Management list. This tool is primarily used for tracking unassigned and assigned smart cards in a networked environment.
 
 ## Key Features
 
 - **CCID Support**:  
-  The **OMNIKEY® 3021** card reader works seamlessly with Windows systems, eliminating manual driver installation. The program utilizes the CCID specification for communication with the card reader.
+  The [**OMNIKEY® 3021**](https://www.hidglobal.com/products/omnikey-3021) card reader works seamlessly with Windows systems, eliminating manual driver installation. The program utilizes the CCID specification for communication with the card reader.
 
 - **PC/SC Compliant**:  
-  Fully compliant with the **PC/SC framework**, an industry-standard API for smart card readers, enabling interaction with cards via APDU and Extended APDU protocols (for T=1 cards).
+  Fully compliant with the [**PC/SC framework**](https://learn.microsoft.com/en-us/windows/win32/api/winscard/), an industry-standard API for smart card readers, enabling interaction with cards via APDU and Extended APDU protocols (for T=1 cards).
 
 - **CPLC Data Extraction**:  
-  Uses ISO 7816 commands to extract **Card Production Lifecycle Data (CPLC)**, including serial numbers, from blank smart cards that have not yet been configured with a **PIV applet**. This allows identification of cards before they are provisioned through Credential Management Systems.
+  Uses [ISO 7816](https://www.iso.org/obp/ui/#iso:std:79893:en) commands to extract **Card Production Lifecycle Data (CPLC)**, including serial numbers, from blank smart cards that have not yet been configured with a **PIV applet**. This allows identification of cards before they are provisioned through Credential Management Systems.
 
 - **PIV Data Extraction**:  
-  Supports the extraction of **FIPS 201 'Printed Information'** from PIV cards by sending binary APDU commands.
+  Supports the extraction of [**FIPS 201 'Printed Information**](https://csrc.nist.gov/pubs/sp/800/73/4/upd1/final) from PIV cards by sending binary APDU commands.
 
 - **Installer Package**:  
-  Distributed as a self-contained Windows installer that includes all necessary dependencies, such as PowerShell 7.x and the **PnP.PowerShell** module for SharePoint Online interaction.
+  Distributed as a self-contained Windows installer that includes all necessary dependencies, such as PowerShell 7.x and the [***PnP.PowerShell**](https://pnp.github.io/powershell/) module for SharePoint Online interaction.
 
 - **CSV Report Generation**:  
   Automatically generates a local CSV report containing the extracted serial numbers for inventory tracking.
@@ -27,7 +27,7 @@ The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed t
 - **Operating System**: Windows 10 or later (64-bit only).
 - **PowerShell**: PowerShell 7.x or later.
 - **Administrator privileges** are required to modify registry settings during installation (specifically, to enable smart card reader escape commands).
-- In order to send or receive **Escape commands** to a smart card reader using Microsoft’s CCID driver, you need to modify the Windows registry by adding a DWORD value called `EscapeCommandEnable` and setting it to a non-zero value. This is required to ensure the smart card reader can handle Escape commands. The registry key for enabling Escape CCID commands is located at:  
+- In order to send or receivE [**Escape commands**](https://www.hidglobal.com/documents/omnikey-contact-smart-card-readers-software-developer-guide) to a smart card reader using Microsoft’s CCID driver, you need to modify the Windows registry by adding a DWORD value called `EscapeCommandEnable` and setting it to a non-zero value. This is required to ensure the smart card reader can handle Escape commands. The registry key for enabling Escape CCID commands is located at:  
   `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB\VID_076B&PID_502A\<serial_number>\Device Parameters\WUDFUsbccidDriver`.
 
 ## Installation Instructions
@@ -44,7 +44,7 @@ This repository includes all the necessary components to build and use the **HID
 
 3. **PowerShell Scripts**:  
    Several PowerShell scripts are used for operations such as installing dependencies, modifying system registry settings, and uploading data to SharePoint Online. These scripts are invoked by the C++ program to ensure the environment is correctly configured and to upload the extracted card data. The relevant PowerShell scripts can be found in the `PowerShellScripts/` directory:
-   - `CheckAndInstallPwsh.ps1`: Ensures that **PowerShell 7.x** and the **PnP.PowerShell** module are installed.
+   - `CheckAndInstallPwsh.ps1`: Ensures thaT [**PowerShell 7.x**](https://github.com/PowerShell/PowerShell/releases) and the [***PnP.PowerShell**](https://pnp.github.io/powershell/) module are installed.
    - `SetEscapeCommand.ps1`: Modifies the registry to enable Escape CCID commands, which are necessary for communication with the smart card reader.
    - `SmartCardInventoryUploader.ps1`: Handles the upload of card serial numbers to SharePoint Online.
    - `certutilExpirationDateSmartCard.ps1`: Extracts additional information from smart cards using the **certutil** utility. This script parses **X.509 certificates** stored on the smart card, extracting data such as expiration dates, issuer information, and other certificate details. This information can be useful for card validation and lifecycle management.
