@@ -27,7 +27,7 @@ The **HID Smartcard Serial Extractor** is a Windows-based C++ program designed t
 - **Operating System**: Windows 10 or later (64-bit only).
 - **PowerShell**: PowerShell 7.x or later.
 - **Administrator privileges** are required to modify registry settings during installation (specifically, to enable smart card reader escape commands).
-- In order to send or receivE [**Escape commands**](https://www.hidglobal.com/documents/omnikey-contact-smart-card-readers-software-developer-guide) to a smart card reader using Microsoft’s CCID driver, you need to modify the Windows registry by adding a DWORD value called `EscapeCommandEnable` and setting it to a non-zero value. This is required to ensure the smart card reader can handle Escape commands. The registry key for enabling Escape CCID commands is located at:  
+- In order to send or receive [**Escape commands**](https://www.hidglobal.com/documents/omnikey-contact-smart-card-readers-software-developer-guide) to a smart card reader using Microsoft’s CCID driver, you need to modify the Windows registry by adding a DWORD value called `EscapeCommandEnable` and setting it to a non-zero value. This is required to ensure the smart card reader can handle Escape commands. The registry key for enabling Escape CCID commands is located at:  
   `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB\VID_076B&PID_502A\<serial_number>\Device Parameters\WUDFUsbccidDriver`.
 
 ## Installation Instructions
@@ -44,7 +44,7 @@ This repository includes all the necessary components to build and use the **HID
 
 3. **PowerShell Scripts**:  
    Several PowerShell scripts are used for operations such as installing dependencies, modifying system registry settings, and uploading data to SharePoint Online. These scripts are invoked by the C++ program to ensure the environment is correctly configured and to upload the extracted card data. The relevant PowerShell scripts can be found in the `PowerShellScripts/` directory:
-   - `CheckAndInstallPwsh.ps1`: Ensures thaT [**PowerShell 7.x**](https://github.com/PowerShell/PowerShell/releases) and the [***PnP.PowerShell**](https://pnp.github.io/powershell/) module are installed.
+   - `CheckAndInstallPwsh.ps1`: Ensures that [**PowerShell 7.x**](https://github.com/PowerShell/PowerShell/releases) and the [***PnP.PowerShell**](https://pnp.github.io/powershell/) module are installed.
    - `SetEscapeCommand.ps1`: Modifies the registry to enable Escape CCID commands, which are necessary for communication with the smart card reader.
    - `SmartCardInventoryUploader.ps1`: Handles the upload of card serial numbers to SharePoint Online.
    - `certutilExpirationDateSmartCard.ps1`: Extracts additional information from smart cards using the **certutil** utility. This script parses **X.509 certificates** stored on the smart card, extracting data such as expiration dates, issuer information, and other certificate details. This information can be useful for card validation and lifecycle management.
