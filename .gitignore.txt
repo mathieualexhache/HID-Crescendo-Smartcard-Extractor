@@ -1,0 +1,10 @@
+*.log
+*.exe
+*.bak
+*.pdb
+*.psd1
+*.psm1
+*.temp
+/bin/
+/obj/
+*.DS_Store
