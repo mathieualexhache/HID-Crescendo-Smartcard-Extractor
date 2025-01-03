@@ -1,5 +1,5 @@
-$siteUrl = ""  # SharePoint Online site URL
-$listName = "" # SharePoint Online list name
+$siteUrl = "https://014gc.sharepoint.com/sites/GCSIProjectSandbox"
+$listName = "SmartCardInventory"
 $scriptDir = $PSScriptRoot  # Directory where the script is located
 $csvFilePath = Join-Path -Path $scriptDir -ChildPath "CardReaderData.csv"  # Path to the CSV file
 $logFile = Join-Path -Path $scriptDir -ChildPath "smart_card_upload_log.txt"  # Log file to keep track of execution history
