@@ -1,6 +1,7 @@
-$siteUrl = "https://014gc.sharepoint.com/sites/GCSIProjectSandbox"
+$siteUrl = "https://014gc.sharepoint.com/sites/GCSIProject"
 $listName = "SmartCardInventory"
-$scriptDir = $PSScriptRoot  # Directory where the script is located
+$logListName = "Card Lifecycle Logs" # Secondary list for lifecycle logs
+$scriptDir = "C:\Users\mathieualex.hache\AppData\Local\GCSI HID Smartcard Serial Extractor" #$PSScriptRoot  # Directory where the script is located
 $csvFilePath = Join-Path -Path $scriptDir -ChildPath "CardReaderData.csv"  # Path to the CSV file
 $logFile = Join-Path -Path $scriptDir -ChildPath "smart_card_upload_log.txt"  # Log file to keep track of execution history
 $lastRunFile = Join-Path -Path $scriptDir -ChildPath "last_run_time.txt"  # File to store the last successful execution timestamp
@@ -62,6 +63,26 @@ try {
     return
 }
 
+# Function to get the current user's email address from Azure AD
+function Get-CurrentUserEmail {
+    $user = Get-PnPUser -Identity "i:0#.f|membership|$env:USERNAME@hrsdc-rhdcc.gc.ca" -Connection $sourceConnection
+    return $user.Email
+}
+
+# Get the current user
+$currentUserEmail = Get-CurrentUserEmail
+
+# Ensure the current user is found
+if (-not $currentUserEmail) {
+    Write-Error "[ERROR] Could not retrieve current user (Support Tech) information."
+    Log-Message "[ERROR] Could not retrieve current user (Support Tech) information."
+    return
+}
+
+# Print the retrieved user email on the screen
+Write-Output "[INFO] Support Tech recorded: $currentUserEmail"
+Log-Message "[INFO] Support Tech recorded: $currentUserEmail"
+
 ## Read CSV File ##
 try {
     $cardData = Import-Csv -Path $csvFilePath -Encoding UTF8
@@ -100,12 +121,12 @@ foreach ($card in $cardData) {
                 $fieldsToUpdate = @{}
 
                 if ($card.Name) {
-                    $fieldsToUpdate["field_2"] = $card.Name  # Update Name field
+                    $fieldsToUpdate["ClientName"] = $card.Name  # Update Name field
                 }
                 if ($card.ExpirationDate) {
                     $expirationDate = [datetime]::ParseExact($card.ExpirationDate, 'yyyy-MM-dd', $null)
                     $formattedExpirationDate = $expirationDate.ToString('MM/dd/yyyy')
-                    $fieldsToUpdate["field_4"] = $formattedExpirationDate  # Update Expiration Date field
+                    $fieldsToUpdate["ExpiryDate"] = $formattedExpirationDate  # Update Expiration Date field
                 }
                 if ($card.ClassifiedEmail) {
                     $fieldsToUpdate["ClassifiedEmail"] = $card.ClassifiedEmail  # Update Classified Email field
@@ -127,32 +148,55 @@ foreach ($card in $cardData) {
             # Initialize the new item with Serial Number and default Status
             $item = @{
                 "Title" = $card.SerialNumber  # Card Serial Number as Title
-                "field_1" = 'Unassigned'      # Default status to Unassigned (this will change below if user info is present)
-                "field_4" = $null             # Expiration Date (null if not provided)
-                "field_2" = $null             # Client Name (null if not provided)
+                "Status" = 'Unassigned'      # Default status to Unassigned (this will change below if user info is present)
+                "ExpiryDate" = $null             # Expiration Date (null if not provided)
+                "ClientName" = $null             # Client Name (null if not provided)
                 "ClassifiedEmail" = $null     # User Email (null if not provided)
             }
 
             # If the CSV contains user-related information, populate those fields
             if ($card.Name) {
-                $item["field_2"] = $card.Name
-                $item["field_1"] = 'Assigned'  # Set status to Assigned when user info is present
+                $item["ClientName"] = $card.Name
+                $item["Status"] = 'Assigned'  # Set status to Assigned when user info is present
             }
             if ($card.ExpirationDate) {
                 $expirationDate = [datetime]::ParseExact($card.ExpirationDate, 'yyyy-MM-dd', $null)
                 $formattedExpirationDate = $expirationDate.ToString('MM/dd/yyyy')
-                $item["field_4"] = $formattedExpirationDate
+                $item["ExpiryDate"] = $formattedExpirationDate
             }
             if ($card.ClassifiedEmail) {
                 $item["ClassifiedEmail"] = $card.ClassifiedEmail
             }
 
-            # Add the new item to SharePoint
+            # Add the new item to SmartCardInventory
             Add-PnPListItem -List $listName -Values $item -Connection $sourceConnection
             Write-Output "[INFO] Added new item for Serial Number $($card.SerialNumber)."
             Log-Message "[INFO] Added new item for Serial Number $($card.SerialNumber)."
-        }
-
+            
+            # Get the ID of the card in the SmartCardInventory list (for example, based on SerialNumber)
+            $smartCardItem = Get-PnPListItem -List $listName -Query "<View><Query><Where><Eq><FieldRef Name='Title' /><Value Type='Text'>$($card.SerialNumber)</Value></Eq></Where></Query></View>" -Connection $sourceConnection | Select-Object -First 1
+            
+            # Get current date and time in the correct format (MM/dd/yyyy HH:mm)
+            $currentDateTime = (Get-Date).ToString('MM/dd/yyyy HH:mm')
+          
+            if ($smartCardItem) { 
+                $smartCardID = $smartCardItem.Id  # Get the ID of the item
+                # Create a log entry in CardLifecycleLogs with the CardNumber Lookup field
+                $logItem = @{
+                    "CardNumber" = $smartCardID # Set the CardNumber Lookup to the ID of the smart card item
+                    "Date" = $currentDateTime # Current datetime in ISO format
+                    "Status" = "Placed into Database"  # Status
+                    "Information" = "Smart card added to inventory using GCSI smart card batch swiping program."  # Descriptive text
+                    "SupportTech" = $currentUserEmail  # Populate the Support Tech field with the current user's email
+                }
+                
+                # Add the log entry to the CardLifecycleLogs list
+                Add-PnPListItem -List $logListName -Values $logItem -Connection $sourceConnection
+                Write-Output "[INFO] Added new lifecycle log for Serial Number $($card.SerialNumber)."
+            } else {
+    Write-Error "[ERROR] Smart card with Serial Number $($card.SerialNumber) not found in SmartCardInventory."
+}
+   }
     } catch {
         Write-Error "[ERROR] Failed to process item for Serial Number: $($card.SerialNumber)"
         Log-Message "[ERROR] Failed to process item for Serial Number: $($card.SerialNumber)"
